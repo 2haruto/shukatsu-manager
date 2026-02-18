@@ -11,7 +11,7 @@
 <ul>
   {% for i in upcoming %}
     <li>
-      {{ i.scheduled_at }} - {{ i.company.name }}（{{ i.get_stage_display }}）
+      {{ i.scheduled_at|date:"Y-m-d H:i" }} - {{ i.company.name }}（{{ i.get_stage_display }}）
       <a href="{% url 'interview_detail' i.id %}">詳細</a>
     </li>
   {% empty %}
@@ -19,11 +19,15 @@
   {% endfor %}
 </ul>
 
-
 <h2>最近の振り返り</h2>
 <ul>
   {% for r in recent_reflections %}
-    <li>{{ r.created_at }} - {{ r.interview.company.name }}：{{ r.question|truncatechars:30 }}</li>
+    <li>
+      {{ r.created_at|date:"Y-m-d H:i" }} -
+      {{ r.interview.company.name }}：
+      {{ r.question|truncatechars:30 }}
+      <a href="{% url 'interview_detail' r.interview.id %}">面接へ</a>
+    </li>
   {% empty %}
     <li>振り返りはまだありません</li>
   {% endfor %}

@@ -1,0 +1,13 @@
+<h1>企業一覧</h1>
+<p><a href="/">ダッシュボード</a></p>
+
+<ul>
+  {% for c in companies %}
+    <li>
+      {{ c.name }}（{{ c.get_status_display }}）
+      <a href="/companies/{{ c.id }}/">詳細</a>
+    </li>
+  {% empty %}
+    <li>企業がありません（adminで追加してね）</li>
+  {% endfor %}
+</ul>

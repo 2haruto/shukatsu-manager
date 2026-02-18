@@ -1,0 +1,13 @@
+<h1>面接一覧</h1>
+<p><a href="/">ダッシュボード</a></p>
+
+<ul>
+  {% for i in interviews %}
+    <li>
+      {{ i.scheduled_at }} - {{ i.company.name }}（{{ i.get_stage_display }}）
+      <a href="/interviews/{{ i.id }}/">詳細</a>
+    </li>
+  {% empty %}
+    <li>面接がありません</li>
+  {% endfor %}
+</ul>

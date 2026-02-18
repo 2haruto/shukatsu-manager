@@ -1,0 +1,30 @@
+<h1>ダッシュボード</h1>
+
+<p>
+  <a href="{% url 'admin:index' %}">admin</a> |
+  <a href="{% url 'company_list' %}">企業</a> |
+  <a href="{% url 'interview_list' %}">面接</a> |
+  <a href="{% url 'logout' %}">ログアウト</a>
+</p>
+
+<h2>直近の面接</h2>
+<ul>
+  {% for i in upcoming %}
+    <li>
+      {{ i.scheduled_at }} - {{ i.company.name }}（{{ i.get_stage_display }}）
+      <a href="{% url 'interview_detail' i.id %}">詳細</a>
+    </li>
+  {% empty %}
+    <li>直近の面接はありません</li>
+  {% endfor %}
+</ul>
+
+
+<h2>最近の振り返り</h2>
+<ul>
+  {% for r in recent_reflections %}
+    <li>{{ r.created_at }} - {{ r.interview.company.name }}：{{ r.question|truncatechars:30 }}</li>
+  {% empty %}
+    <li>振り返りはまだありません</li>
+  {% endfor %}
+</ul>

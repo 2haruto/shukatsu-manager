@@ -29,8 +29,8 @@ class ReflectionItem(models.Model):
     question = models.TextField()
     answer = models.TextField()
     improvement = models.TextField()
-    self_score = models.PositiveSmallIntegerField(null=True, blank=True)  # 1-5想定
-    tags = models.CharField(max_length=200, blank=True)  # 例: 志望動機, ガクチカ など
+    self_score = models.PositiveSmallIntegerField(null=True, blank=True)
+    tags = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:

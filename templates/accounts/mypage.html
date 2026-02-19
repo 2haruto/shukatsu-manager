@@ -1,19 +1,26 @@
-<h1>ダッシュボード</h1>
+<h1>マイページ</h1>
+
+<p>ユーザー：{{ request.user.username }}</p>
 
 <p>
-  <a href="{% url 'admin:index' %}">admin</a> |
+  企業：{{ companies_count }} /
+  面接：{{ interviews_count }} /
+  振り返り：{{ reflections_count }}
+</p>
+
+<p>
+  <a href="{% url 'dashboard' %}">ダッシュボード</a> |
   <a href="{% url 'company_list' %}">企業</a> |
   <a href="{% url 'interview_list' %}">面接</a> |
   <a href="{% url 'logout' %}">ログアウト</a>
-  <a href="{% url 'interview_create' %}">＋面接を追加</a>
 </p>
 
 <h2>直近の面接</h2>
 <ul>
   {% for i in upcoming %}
     <li>
-      {{ i.scheduled_at|date:"Y-m-d H:i" }} - {{ i.company.name }}（{{ i.get_stage_display }}）
-      <a href="{% url 'interview_detail' i.pk %}">詳細</a>
+      {{ i.scheduled_at|date:"Y-m-d H:i" }} - {{ i.company.name }}
+      <a href="{% url 'interview_detail' i.id %}">詳細</a>
     </li>
   {% empty %}
     <li>直近の面接はありません</li>
@@ -27,7 +34,7 @@
       {{ r.created_at|date:"Y-m-d H:i" }} -
       {{ r.interview.company.name }}：
       {{ r.question|truncatechars:30 }}
-      <a href="{% url 'interview_detail' r.interview.pk %}">面接へ</a>
+      <a href="{% url 'interview_detail' r.interview.id %}">面接へ</a>
     </li>
   {% empty %}
     <li>振り返りはまだありません</li>

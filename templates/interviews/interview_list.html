@@ -1,6 +1,8 @@
 <h1>面接一覧</h1>
 <p><a href="/">ダッシュボード</a></p>
 
+<p><a href="{% url 'interview_create' %}">＋面接を追加</a></p>
+
 <ul>
   {% for i in interviews %}
     <li>

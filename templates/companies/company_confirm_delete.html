@@ -1,0 +1,13 @@
+<h1>企業削除</h1>
+
+<p>「{{ company.name }}」を削除しますか？</p>
+<p>この操作は取り消せません。</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">削除する</button>
+</form>
+
+<p>
+  <a href="{% url 'company_detail' company.id %}">キャンセル</a>
+</p>

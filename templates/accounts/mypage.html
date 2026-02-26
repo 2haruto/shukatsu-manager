@@ -1,42 +1,62 @@
-<h1>マイページ</h1>
+{% extends "base.html" %}
 
-<p>ユーザー：{{ request.user.username }}</p>
+{% block title %}マイページ | 就活管理アプリ{% endblock %}
 
-<p>
-  企業：{{ companies_count }} /
-  面接：{{ interviews_count }} /
-  振り返り：{{ reflections_count }}
-</p>
+{% block content %}
+<div class="card">
+  <h2 class="page-title">マイページ</h2>
 
-<p>
-  <a href="{% url 'dashboard' %}">ダッシュボード</a> |
-  <a href="{% url 'company_list' %}">企業</a> |
-  <a href="{% url 'interview_list' %}">面接</a> |
-  <a href="{% url 'logout' %}">ログアウト</a>
-</p>
+  <p><strong>ユーザー：</strong>{{ request.user.username }}</p>
 
-<h2>直近の面接</h2>
-<ul>
-  {% for i in upcoming %}
-    <li>
-      {{ i.scheduled_at|date:"Y-m-d H:i" }} - {{ i.company.name }}
-      <a href="{% url 'interview_detail' i.id %}">詳細</a>
-    </li>
-  {% empty %}
-    <li>直近の面接はありません</li>
-  {% endfor %}
-</ul>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">企業</div>
+      <div class="stat-value">{{ companies_count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">面接</div>
+      <div class="stat-value">{{ interviews_count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">振り返り</div>
+      <div class="stat-value">{{ reflections_count }}</div>
+    </div>
+  </div>
+</div>
 
-<h2>最近の振り返り</h2>
-<ul>
-  {% for r in recent_reflections %}
-    <li>
-      {{ r.created_at|date:"Y-m-d H:i" }} -
-      {{ r.interview.company.name }}：
-      {{ r.question|truncatechars:30 }}
-      <a href="{% url 'interview_detail' r.interview.id %}">面接へ</a>
-    </li>
-  {% empty %}
-    <li>振り返りはまだありません</li>
-  {% endfor %}
-</ul>
+<div class="card">
+  <h3 class="section-title">直近の面接</h3>
+
+  {% if upcoming %}
+    <ul class="list">
+      {% for i in upcoming %}
+        <li>
+          {{ i.scheduled_at|date:"Y-m-d H:i" }} - {{ i.company.name }}
+          <a href="{% url 'interview_detail' i.id %}">詳細</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-message">直近の面接はありません</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3 class="section-title">最近の振り返り</h3>
+
+  {% if recent_reflections %}
+    <ul class="list">
+      {% for r in recent_reflections %}
+        <li>
+          {{ r.created_at|date:"Y-m-d H:i" }} -
+          {{ r.interview.company.name }}：
+          {{ r.question|truncatechars:30 }}
+          <a href="{% url 'interview_detail' r.interview.id %}">面接へ</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-message">振り返りはまだありません</p>
+  {% endif %}
+</div>
+{% endblock %}

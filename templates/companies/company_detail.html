@@ -1,32 +1,56 @@
-<h1>{{ company.name }}</h1>
+{% extends "base.html" %}
 
-<p>ステータス：{{ company.get_status_display }}</p>
-<p>職種：{{ company.role|default:"未設定" }}</p>
-<p>優先度：{{ company.priority }}</p>
+{% block title %}{{ company.name }} | 就活管理アプリ{% endblock %}
 
-{% if company.url %}
-  <p>URL：<a href="{{ company.url }}" target="_blank">{{ company.url }}</a></p>
-{% endif %}
+{% block content %}
+<div class="card">
+  <h2 class="page-title">{{ company.name }}</h2>
 
-{% if company.memo %}
-  <p>メモ：{{ company.memo }}</p>
-{% endif %}
+  <div class="actions">
+    <a href="{% url 'company_list' %}" class="button button-secondary">一覧へ</a>
+    <a href="{% url 'company_update' company.id %}" class="button">企業編集</a>
+    <a href="{% url 'company_delete' company.id %}" class="button button-secondary">削除</a>
+    <a href="{% url 'interview_create' %}" class="button">面接追加</a>
+  </div>
 
-<p>
-  <a href="{% url 'company_list' %}">一覧へ</a> |
-  <a href="{% url 'company_update' company.id %}">企業編集</a> |
-  <a href="{% url 'company_delete' company.id %}">削除</a>
-  <a href="{% url 'interview_create' %}">面接追加</a>
-</p>
+  <div class="detail-list">
+    <div class="detail-label">ステータス</div>
+    <div class="detail-value"><span class="badge">{{ company.get_status_display }}</span></div>
 
-<h2>面接一覧</h2>
-<ul>
-  {% for i in interviews %}
-    <li>
-      {{ i.scheduled_at }}（{{ i.get_stage_display }}）
-      <a href="{% url 'interview_detail' i.id %}">詳細</a>
-    </li>
-  {% empty %}
-    <li>面接はまだありません。</li>
-  {% endfor %}
-</ul>
+    <div class="detail-label">職種</div>
+    <div class="detail-value">{{ company.role|default:"未設定" }}</div>
+
+    <div class="detail-label">優先度</div>
+    <div class="detail-value">{{ company.priority }}</div>
+
+    {% if company.url %}
+      <div class="detail-label">URL</div>
+      <div class="detail-value">
+        <a href="{{ company.url }}" target="_blank" rel="noopener noreferrer">{{ company.url }}</a>
+      </div>
+    {% endif %}
+
+    {% if company.memo %}
+      <div class="detail-label">メモ</div>
+      <div class="detail-value">{{ company.memo|linebreaksbr }}</div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <h3 class="section-title">面接一覧</h3>
+
+  {% if interviews %}
+    <ul class="list">
+      {% for i in interviews %}
+        <li>
+          {{ i.scheduled_at|date:"Y-m-d H:i" }}（{{ i.get_stage_display }}）
+          <a href="{% url 'interview_detail' i.id %}">詳細</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-message">面接はまだありません。</p>
+  {% endif %}
+</div>
+{% endblock %}

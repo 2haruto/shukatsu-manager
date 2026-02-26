@@ -1,81 +1,90 @@
-<h1>企業一覧</h1>
+{% extends "base.html" %}
 
-<p>
-  <a href="/">ダッシュボード</a> |
-  <a href="{% url 'company_create' %}">企業追加</a>
-</p>
+{% block title %}企業一覧 | 就活管理アプリ{% endblock %}
 
-<form method="get">
-  <div>
-    <label for="keyword">企業名検索：</label>
-    <input
-      type="text"
-      name="keyword"
-      id="keyword"
-      value="{{ keyword }}"
-      placeholder="企業名を入力"
-    >
+{% block content %}
+<div class="card">
+  <h2 class="page-title">企業一覧</h2>
+
+  <div class="actions">
+    <a href="{% url 'company_create' %}" class="button">＋企業追加</a>
   </div>
 
-  <div>
-    <label for="status">ステータスで絞り込み：</label>
-    <select name="status" id="status">
-      <option value="">すべて</option>
-      {% for value, label in status_choices %}
-        <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
-          {{ label }}
-        </option>
-      {% endfor %}
-    </select>
-  </div>
+  <form method="get" class="filter-form">
+    <div class="form-group">
+      <label for="keyword">企業名検索</label>
+      <input
+        type="text"
+        name="keyword"
+        id="keyword"
+        value="{{ keyword }}"
+        placeholder="企業名を入力"
+      >
+    </div>
 
-  <div>
-    <label for="sort">並び替え：</label>
-    <select name="sort" id="sort">
-      {% for value, label in sort_choices %}
-        <option value="{{ value }}" {% if selected_sort == value %}selected{% endif %}>
-          {{ label }}
-        </option>
-      {% endfor %}
-    </select>
-  </div>
+    <div class="form-group">
+      <label for="status">ステータス</label>
+      <select name="status" id="status">
+        <option value="">すべて</option>
+        {% for value, label in status_choices %}
+          <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
+            {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
 
-  <button type="submit">検索</button>
+    <div class="form-group">
+      <label for="sort">並び替え</label>
+      <select name="sort" id="sort">
+        {% for value, label in sort_choices %}
+          <option value="{{ value }}" {% if selected_sort == value %}selected{% endif %}>
+            {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
 
-  {% if keyword or selected_status or selected_sort != "updated_desc" %}
-    <a href="{% url 'company_list' %}">リセット</a>
+    <button type="submit">検索</button>
+
+    {% if keyword or selected_status or selected_sort != "updated_desc" %}
+      <a href="{% url 'company_list' %}" class="button button-secondary">リセット</a>
+    {% endif %}
+  </form>
+
+  <p class="muted">表示件数：{{ filtered_count }}件 / 全{{ total_count }}件</p>
+
+  {% if companies %}
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>企業名</th>
+            <th>ステータス</th>
+            <th>職種</th>
+            <th>優先度</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in companies %}
+            <tr>
+              <td>{{ c.name }}</td>
+              <td><span class="badge">{{ c.get_status_display }}</span></td>
+              <td>{{ c.role|default:"未設定" }}</td>
+              <td>{{ c.priority }}</td>
+              <td>
+                <a href="{% url 'company_detail' c.id %}">詳細</a> /
+                <a href="{% url 'company_update' c.id %}">編集</a> /
+                <a href="{% url 'company_delete' c.id %}">削除</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty-message">条件に合う企業はありません。</p>
   {% endif %}
-</form>
-
-<p>表示件数：{{ filtered_count }}件 / 全{{ total_count }}件</p>
-
-{% if companies %}
-  <table border="1" cellpadding="8" cellspacing="0">
-    <thead>
-      <tr>
-        <th>企業名</th>
-        <th>ステータス</th>
-        <th>職種</th>
-        <th>優先度</th>
-        <th>操作</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for c in companies %}
-        <tr>
-          <td>{{ c.name }}</td>
-          <td>{{ c.get_status_display }}</td>
-          <td>{{ c.role|default:"未設定" }}</td>
-          <td>{{ c.priority }}</td>
-          <td>
-            <a href="{% url 'company_detail' c.id %}">詳細</a> |
-            <a href="{% url 'company_update' c.id %}">編集</a>
-            <a href="{% url 'company_delete' c.id %}">削除</a>
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-{% else %}
-  <p>条件に合う企業はありません。</p>
-{% endif %}
+</div>
+{% endblock %}

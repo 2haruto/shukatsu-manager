@@ -1,12 +1,56 @@
-<h1>ログイン</h1>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">ログイン</button>
-</form>
-<p>
-  アカウントがない？ <a href="{% url 'signup' %}">新規登録</a>
-</p>
-<p>
-  <a href="{% url 'mypage' %}">マイページ</a>
-</p>
+{% extends "base.html" %}
+
+{% block title %}ログイン | 就活管理アプリ{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <h2 class="page-title">ログイン</h2>
+
+  <form method="post" class="app-form" autocomplete="off">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="error-box">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <p>
+      <label for="{{ form.username.id_for_label }}">ユーザー名:</label>
+      <input
+        type="text"
+        name="{{ form.username.html_name }}"
+        id="{{ form.username.id_for_label }}"
+        value=""
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+      >
+      {% if form.username.errors %}
+        <span class="errorlist">{{ form.username.errors }}</span>
+      {% endif %}
+    </p>
+
+    <p>
+      <label for="{{ form.password.id_for_label }}">パスワード:</label>
+      <input
+        type="password"
+        name="{{ form.password.html_name }}"
+        id="{{ form.password.id_for_label }}"
+        autocomplete="new-password"
+      >
+      {% if form.password.errors %}
+        <span class="errorlist">{{ form.password.errors }}</span>
+      {% endif %}
+    </p>
+
+    <div class="actions">
+      <button type="submit">ログイン</button>
+    </div>
+  </form>
+
+  <p class="muted">
+    アカウントがない方はこちら＞ <a href="{% url 'signup' %}">新規登録</a>
+  </p>
+</div>
+{% endblock %}

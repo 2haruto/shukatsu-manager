@@ -1,11 +1,22 @@
-<h1>新規登録</h1>
+{% extends "base.html" %}
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">登録する</button>
-</form>
+{% block title %}新規登録 | 就活管理アプリ{% endblock %}
 
-<p>
-  すでにアカウントある方はこちら <a href="{% url 'login' %}">ログイン</a>
-</p>
+{% block content %}
+<div class="auth-card">
+  <h2 class="page-title">新規登録</h2>
+
+  <form method="post" class="app-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="actions">
+      <button type="submit">登録する</button>
+    </div>
+  </form>
+
+  <p class="muted">
+    すでにアカウントがある方はこちら <a href="{% url 'login' %}">ログイン</a>
+  </p>
+</div>
+{% endblock %}

@@ -1,9 +1,19 @@
-<h1>{{ title }}</h1>
+{% extends "base.html" %}
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">{{ submit_label }}</button>
-</form>
+{% block title %}{{ title }} | 就活管理アプリ{% endblock %}
 
-<p><a href="/companies/">一覧へ</a></p>
+{% block content %}
+<div class="card form-card">
+  <h2 class="page-title">{{ title }}</h2>
+
+  <form method="post" class="app-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="actions">
+      <button type="submit">{{ submit_label }}</button>
+      <a href="{% url 'company_list' %}" class="button button-secondary">一覧へ</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

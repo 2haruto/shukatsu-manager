@@ -1,15 +1,26 @@
-<h1>面接一覧</h1>
-<p><a href="/">ダッシュボード</a></p>
+{% extends "base.html" %}
 
-<p><a href="{% url 'interview_create' %}">＋面接を追加</a></p>
+{% block title %}面接一覧 | 就活管理アプリ{% endblock %}
 
-<ul>
-  {% for i in interviews %}
-    <li>
-      {{ i.scheduled_at }} - {{ i.company.name }}（{{ i.get_stage_display }}）
-      <a href="/interviews/{{ i.id }}/">詳細</a>
-    </li>
-  {% empty %}
-    <li>面接がありません</li>
-  {% endfor %}
-</ul>
+{% block content %}
+<div class="card">
+  <h2 class="page-title">面接一覧</h2>
+
+  <div class="actions">
+    <a href="{% url 'interview_create' %}" class="button">＋面接を追加</a>
+  </div>
+
+  {% if interviews %}
+    <ul class="list">
+      {% for i in interviews %}
+        <li>
+          {{ i.scheduled_at|date:"Y-m-d H:i" }} - {{ i.company.name }}（{{ i.get_stage_display }}）
+          <a href="{% url 'interview_detail' i.id %}">詳細</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-message">面接がありません</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,34 +1,67 @@
-<h1>{{ interview.company.name }} / {{ interview.get_stage_display }}</h1>
-<p>日時：{{ interview.scheduled_at }}</p>
-<p><a href="/companies/{{ interview.company.id }}/">会社へ戻る</a> | <a href="/interviews/">面接一覧</a></p>
+{% extends "base.html" %}
 
-<h2>振り返りを追加</h2>
+{% block title %}面接詳細 | 就活管理アプリ{% endblock %}
 
-{% if form.errors %}
-  <div style="color:red;">
-    {{ form.errors }}
+{% block content %}
+<div class="card">
+  <h2 class="page-title">{{ interview.company.name }} / {{ interview.get_stage_display }}</h2>
+
+  <div class="detail-list">
+    <div class="detail-label">日時</div>
+    <div class="detail-value">{{ interview.scheduled_at|date:"Y-m-d H:i" }}</div>
   </div>
-{% endif %}
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">保存</button>
-</form>
-<hr/>
+  <div class="actions">
+    <a href="{% url 'company_detail' interview.company.id %}" class="button button-secondary">会社へ戻る</a>
+    <a href="{% url 'interview_list' %}" class="button button-secondary">面接一覧</a>
+  </div>
+</div>
 
-<h2>振り返り</h2>
-<ul>
-  {% for r in items %}
-    <li>
-      {% if r.question %}<b>Q:</b> {{ r.question }}<br/>{% endif %}
-      {% if r.answer %}<b>A:</b> {{ r.answer }}<br/>{% endif %}
-      {% if r.improvement %}<b>改善:</b> {{ r.improvement }}{% endif %}
-      {% if not r.question and not r.answer and not r.improvement %}
-        （内容なし）
-      {% endif %}
-    </li>
-  {% empty %}
-    <li>振り返りがありません</li>
-  {% endfor %}
-</ul>
+<div class="card">
+  <h3 class="section-title">振り返りを追加</h3>
+
+  {% if form.errors %}
+    <div class="error-box">
+      {{ form.errors }}
+    </div>
+  {% endif %}
+
+  <form method="post" class="app-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="actions">
+      <button type="submit">保存</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h3 class="section-title">振り返り</h3>
+
+  {% if items %}
+    <ul class="reflection-list">
+      {% for r in items %}
+        <li class="reflection-item">
+          {% if r.question %}
+            <p><strong>Q:</strong> {{ r.question }}</p>
+          {% endif %}
+
+          {% if r.answer %}
+            <p><strong>A:</strong> {{ r.answer }}</p>
+          {% endif %}
+
+          {% if r.improvement %}
+            <p><strong>改善:</strong> {{ r.improvement }}</p>
+          {% endif %}
+
+          {% if not r.question and not r.answer and not r.improvement %}
+            <p class="empty-message">（内容なし）</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-message">振り返りがありません</p>
+  {% endif %}
+</div>
+{% endblock %}

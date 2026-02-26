@@ -77,17 +77,13 @@ def company_list(request):
 
 
 @login_required
-def company_delete(request, pk: int):
+def company_detail(request, pk: int):
     company = get_object_or_404(Company, pk=pk, owner=request.user)
-
-    if request.method == "POST":
-        company.delete()
-        return redirect("company_list")
-
+    interviews = company.interviews.order_by("scheduled_at")
     return render(
         request,
-        "companies/company_confirm_delete.html",
-        {"company": company},
+        "companies/company_detail.html",
+        {"company": company, "interviews": interviews},
     )
 
 
@@ -126,4 +122,19 @@ def company_update(request, pk: int):
         request,
         "companies/company_form.html",
         {"form": form, "title": "企業編集", "submit_label": "保存"},
+    )
+
+
+@login_required
+def company_delete(request, pk: int):
+    company = get_object_or_404(Company, pk=pk, owner=request.user)
+
+    if request.method == "POST":
+        company.delete()
+        return redirect("company_list")
+
+    return render(
+        request,
+        "companies/company_confirm_delete.html",
+        {"company": company},
     )

@@ -1,13 +1,21 @@
 <h1>企業一覧</h1>
-<p><a href="/">ダッシュボード</a></p>
 
-<ul>
-  {% for c in companies %}
-    <li>
-      {{ c.name }}（{{ c.get_status_display }}）
-      <a href="/companies/{{ c.id }}/">詳細</a>
-    </li>
-  {% empty %}
-    <li>企業がありません（adminで追加してね）</li>
-  {% endfor %}
-</ul>
+<p>
+  <a href="/">ダッシュボード</a> |
+  <a href="/companies/new/">企業追加</a>
+</p>
+
+{% if companies %}
+  <ul>
+    {% for c in companies %}
+      <li>
+        <a href="/companies/{{ c.id }}/">{{ c.name }}</a>
+        - {{ c.get_status_display }}
+        {% if c.role %} / {{ c.role }}{% endif %}
+        {% if c.priority %} / 優先度: {{ c.priority }}{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>企業がありません。</p>
+{% endif %}

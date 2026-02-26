@@ -1,0 +1,9 @@
+<h1>{{ title }}</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">{{ submit_label }}</button>
+</form>
+
+<p><a href="/companies/">一覧へ</a></p>

@@ -1,15 +1,26 @@
 <h1>{{ company.name }}</h1>
-<p>ステータス：{{ company.get_status_display }}</p>
-<p><a href="/companies/">一覧へ</a></p>
 
-<h2>面接</h2>
-<ul>
-  {% for i in interviews %}
-    <li>
-      {{ i.scheduled_at }}（{{ i.get_stage_display }}）
-      <a href="/interviews/{{ i.id }}/">詳細</a>
-    </li>
-  {% empty %}
-    <li>面接はありません</li>
-  {% endfor %}
-</ul>
+<p>職種: {{ company.role }}</p>
+<p>ステータス: {{ company.get_status_display }}</p>
+<p>優先度: {{ company.priority }}</p>
+<p>URL: {{ company.url }}</p>
+<p>メモ: {{ company.memo }}</p>
+
+<p>
+  <a href="/companies/">一覧へ</a> |
+  <a href="/companies/{{ company.id }}/edit/">企業編集</a>
+</p>
+
+<h2>面接一覧</h2>
+
+{% if interviews %}
+  <ul>
+    {% for interview in interviews %}
+      <li>
+        {{ interview.scheduled_at }} - {{ interview.get_stage_display }}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>面接はまだありません。</p>
+{% endif %}

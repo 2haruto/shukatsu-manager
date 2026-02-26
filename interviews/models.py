@@ -13,7 +13,7 @@ class Interview(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="interviews")
     scheduled_at = models.DateTimeField()
     stage = models.CharField(max_length=20, choices=Stage.choices, default=Stage.FIRST)
-    location = models.CharField(max_length=200, blank=True)  # オンライン/対面/URLなど
+    location = models.CharField(max_length=200, blank=True)
     notes = models.TextField(blank=True)
     overall_reflection = models.TextField(blank=True)
     next_action = models.TextField(blank=True)

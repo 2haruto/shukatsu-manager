@@ -3,9 +3,17 @@
 <p>
   <a href="{% url 'company_list' %}">企業</a> |
   <a href="{% url 'interview_list' %}">面接</a> |
-  <a href="{% url 'logout' %}">ログアウト</a>
-  <a href="{% url 'interview_create' %}">＋面接を追加</a>
+
+  <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0; padding:0;">
+    {% csrf_token %}
+    <button type="submit" style="background:none; border:none; padding:0; color:#4ea1ff; cursor:pointer; text-decoration:underline;">
+      ログアウト
+    </button>
+  </form>
+
+  | <a href="{% url 'interview_create' %}">＋面接を追加</a>
 </p>
+
 
 <h2>直近の面接</h2>
 <ul>

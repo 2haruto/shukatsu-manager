@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 
 from .models import Company
+from .forms import CompanyForm
 from interviews.models import Interview, ReflectionItem
 
 
@@ -39,4 +40,42 @@ def company_detail(request, pk: int):
         request,
         "companies/company_detail.html",
         {"company": company, "interviews": interviews},
+    )
+
+
+@login_required
+def company_create(request):
+    if request.method == "POST":
+        form = CompanyForm(request.POST)
+        if form.is_valid():
+            company = form.save(commit=False)
+            company.owner = request.user
+            company.save()
+            return redirect("company_detail", pk=company.pk)
+    else:
+        form = CompanyForm()
+
+    return render(
+        request,
+        "companies/company_form.html",
+        {"form": form, "title": "企業追加", "submit_label": "追加"},
+    )
+
+
+@login_required
+def company_update(request, pk: int):
+    company = get_object_or_404(Company, pk=pk, owner=request.user)
+
+    if request.method == "POST":
+        form = CompanyForm(request.POST, instance=company)
+        if form.is_valid():
+            form.save()
+            return redirect("company_detail", pk=company.pk)
+    else:
+        form = CompanyForm(instance=company)
+
+    return render(
+        request,
+        "companies/company_form.html",
+        {"form": form, "title": "企業編集", "submit_label": "保存"},
     )

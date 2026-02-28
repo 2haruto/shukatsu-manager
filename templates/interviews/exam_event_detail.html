@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}受験イベント詳細 | 就活管理アプリ{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="detail-header">
+    <div class="detail-header-left">
+      <h2 class="page-title">{{ exam_event.title }}</h2>
+      <p class="detail-subtitle">受験イベントの詳細情報を確認できます。</p>
+    </div>
+
+    <div class="actions" style="margin: 0;">
+      <a href="{% url 'exam_event_list' %}" class="button button-secondary">一覧へ</a>
+      <a href="{% url 'exam_event_update' exam_event.id %}" class="button">編集</a>
+      <a href="{% url 'exam_event_delete' exam_event.id %}" class="button button-secondary">削除</a>
+      <a href="{% url 'school_detail' exam_event.school.id %}" class="button button-secondary">学校へ</a>
+    </div>
+  </div>
+
+  <div class="detail-card">
+    <div class="detail-list">
+      <div class="detail-label">学校名</div>
+      <div class="detail-value">{{ exam_event.school.name }}</div>
+
+      <div class="detail-label">イベント種別</div>
+      <div class="detail-value"><span class="badge">{{ exam_event.get_event_type_display }}</span></div>
+
+      <div class="detail-label">日時</div>
+      <div class="detail-value">{{ exam_event.scheduled_at|date:"Y-m-d H:i" }}</div>
+
+      <div class="detail-label">場所</div>
+      <div class="detail-value">{{ exam_event.location|default:"未設定" }}</div>
+
+      {% if exam_event.memo %}
+        <div class="detail-label">メモ</div>
+        <div class="detail-value">{{ exam_event.memo|linebreaksbr }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

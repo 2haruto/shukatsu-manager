@@ -3,27 +3,58 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}就活管理アプリ{% endblock %}</title>
+  <title>{% block title %}就活・受験管理アプリ{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
   <header class="site-header">
     <div class="site-header-inner">
-      <h1 class="site-title">
-        <a href="{% url 'dashboard' %}">就活管理アプリ</a>
-      </h1>
+      <div class="site-brand">
+        <h1 class="site-title">
+          <a href="{% url 'dashboard' %}">就活・受験管理アプリ</a>
+        </h1>
+        <p class="site-subtitle">就活・受験・学習をまとめて管理</p>
+      </div>
 
-      <nav class="site-nav">
-        <a href="{% url 'dashboard' %}">ダッシュボード</a>
-        <a href="{% url 'company_list' %}">企業</a>
-        <a href="{% url 'interview_list' %}">面接</a>
-        <a href="{% url 'interview_create' %}">＋面接を追加</a>
+      <div class="header-right">
+        <div class="mode-switch">
+          <span class="mode-label">表示モード</span>
 
-        <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0;">
-          {% csrf_token %}
-          <button type="submit" class="logout-button">ログアウト</button>
-        </form>
-      </nav>
+          <div class="mode-buttons">
+            <a
+              href="{% url 'switch_mode' 'job' %}"
+              class="mode-button {% if request.session.mode != 'student' %}active{% endif %}"
+            >
+              就活モード
+            </a>
+            <a
+              href="{% url 'switch_mode' 'student' %}"
+              class="mode-button {% if request.session.mode == 'student' %}active{% endif %}"
+            >
+              学生モード
+            </a>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+          <a href="{% url 'dashboard' %}">ダッシュボード</a>
+
+          {% if request.session.mode == "student" %}
+            <a href="{% url 'school_list' %}">学校</a>
+            <a href="{% url 'exam_event_list' %}">受験イベント</a>
+            <a href="{% url 'study_log_list' %}">勉強記録</a>
+          {% else %}
+            <a href="{% url 'company_list' %}">企業</a>
+            <a href="{% url 'interview_list' %}">面接</a>
+            <a href="{% url 'interview_create' %}">＋面接を追加</a>
+          {% endif %}
+
+          <form method="post" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">ログアウト</button>
+          </form>
+        </nav>
+      </div>
     </div>
   </header>
 

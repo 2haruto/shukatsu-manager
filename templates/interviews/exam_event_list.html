@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}受験イベント一覧 | 就活・受験管理アプリ{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2 class="page-title">受験イベント一覧</h2>
+      <p class="page-description">模試・出願締切・入試・合格発表などをまとめて管理できます。</p>
+    </div>
+
+    <div class="actions" style="margin: 0;">
+      <a href="{% url 'exam_event_create' %}" class="button">＋受験イベント追加</a>
+    </div>
+  </div>
+
+  <div class="filter-box">
+    <h3 class="table-title">絞り込み</h3>
+
+    <form method="get" class="filter-form">
+      <div class="form-group">
+        <label for="school">学校</label>
+        <select name="school" id="school">
+          <option value="">すべて</option>
+          {% for s in schools %}
+            <option value="{{ s.id }}" {% if selected_school == s.id|stringformat:"s" %}selected{% endif %}>
+              {{ s.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="event_type">イベント種別</label>
+        <select name="event_type" id="event_type">
+          <option value="">すべて</option>
+          {% for value, label in event_type_choices %}
+            <option value="{{ value }}" {% if selected_event_type == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="actions" style="margin: 0;">
+        <button type="submit">検索</button>
+        {% if selected_school or selected_event_type %}
+          <a href="{% url 'exam_event_list' %}" class="button button-secondary">リセット</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <p class="muted">表示件数：{{ filtered_count }}件 / 全{{ total_count }}件</p>
+
+  {% if exam_events %}
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>日時</th>
+            <th>学校</th>
+            <th>イベント名</th>
+            <th>種別</th>
+            <th>場所</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in exam_events %}
+            <tr>
+              <td>{{ e.scheduled_at|date:"Y-m-d H:i" }}</td>
+              <td>{{ e.school.name }}</td>
+              <td>{{ e.title }}</td>
+              <td><span class="badge">{{ e.get_event_type_display }}</span></td>
+              <td>{{ e.location|default:"未設定" }}</td>
+              <td>
+                <div class="inline-actions">
+                  <a href="{% url 'exam_event_detail' e.id %}" class="link-button">詳細</a>
+                  <a href="{% url 'exam_event_update' e.id %}" class="link-button">編集</a>
+                  <a href="{% url 'exam_event_delete' e.id %}" class="link-button">削除</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3 class="empty-state-title">受験イベントがまだありません</h3>
+      <p class="empty-state-text">
+        模試、出願締切、入試、合格発表などを登録すると、予定をまとめて確認できます。
+      </p>
+      <a href="{% url 'exam_event_create' %}" class="button">＋受験イベントを追加する</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

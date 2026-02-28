@@ -1,35 +1,176 @@
 {% extends "base.html" %}
 
-{% block title %}ダッシュボード | 就活管理アプリ{% endblock %}
+{% block title %}ダッシュボード | 就活・受験管理アプリ{% endblock %}
 
 {% block content %}
 <div class="card">
   <h2 class="page-title">ダッシュボード</h2>
 
-  <h3 class="section-title">直近の面接</h3>
-  <ul class="list">
-    {% for i in upcoming %}
-      <li>
-        {{ i.scheduled_at|date:"Y-m-d H:i" }} - {{ i.company.name }}（{{ i.get_stage_display }}）
-        <a href="{% url 'interview_detail' i.pk %}">詳細</a>
-      </li>
-    {% empty %}
-      <li>直近の面接はありません</li>
-    {% endfor %}
-  </ul>
-
-  <h3 class="section-title">最近の振り返り</h3>
-  <ul class="list">
-    {% for r in recent_reflections %}
-      <li>
-        {{ r.created_at|date:"Y-m-d H:i" }} -
-        {{ r.interview.company.name }}：
-        {{ r.question|truncatechars:30 }}
-        <a href="{% url 'interview_detail' r.interview.pk %}">面接へ</a>
-      </li>
-    {% empty %}
-      <li>振り返りはまだありません</li>
-    {% endfor %}
-  </ul>
+  {% if mode == "student" %}
+    <p class="muted">学生モードで表示中です。</p>
+  {% else %}
+    <p class="muted">就活モードで表示中です。</p>
+  {% endif %}
 </div>
+
+{% if mode == "student" %}
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-title">学生版サマリー</h3>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label">登録学校数</div>
+        <div class="summary-value">{{ school_count }}件</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-label">受験イベント数</div>
+        <div class="summary-value">{{ exam_event_count }}件</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-label">勉強記録数</div>
+        <div class="summary-value">{{ study_log_count }}件</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-label">今週の勉強時間</div>
+        <div class="summary-value">{{ weekly_minutes }}分</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-title">直近の受験イベント</h3>
+      <div class="actions" style="margin: 0;">
+        <a href="{% url 'exam_event_list' %}" class="button button-secondary">一覧へ</a>
+        <a href="{% url 'exam_event_create' %}" class="button">＋追加</a>
+      </div>
+    </div>
+
+    <ul class="dashboard-list">
+      {% for e in upcoming_exam_events %}
+        <li>
+          <div class="dashboard-item-title">
+            {{ e.title }}（{{ e.get_event_type_display }}）
+          </div>
+          <div class="dashboard-item-meta">
+            {{ e.scheduled_at|date:"Y-m-d H:i" }} / {{ e.school.name }}
+            <a href="{% url 'exam_event_detail' e.pk %}">詳細</a>
+          </div>
+        </li>
+      {% empty %}
+        <li>直近の受験イベントはありません</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-title">最近の勉強記録</h3>
+      <div class="actions" style="margin: 0;">
+        <a href="{% url 'study_log_list' %}" class="button button-secondary">一覧へ</a>
+        <a href="{% url 'study_log_create' %}" class="button">＋追加</a>
+      </div>
+    </div>
+
+    <ul class="dashboard-list">
+      {% for log in recent_study_logs %}
+        <li>
+          <div class="dashboard-item-title">
+            {{ log.get_subject_display }} / {{ log.title }}
+          </div>
+          <div class="dashboard-item-meta">
+            {{ log.study_date|date:"Y-m-d" }} / {{ log.school.name }} / {{ log.duration_minutes }}分
+            <a href="{% url 'study_log_detail' log.pk %}">詳細</a>
+          </div>
+        </li>
+      {% empty %}
+        <li>勉強記録はまだありません</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card ai-card">
+    <div class="section-header">
+      <h3 class="section-title">AIサポート</h3>
+    </div>
+
+    <ul class="dashboard-list">
+      {% for advice in student_ai_advice %}
+        <li>
+          <div class="dashboard-item-title">次にやること提案</div>
+          <div class="dashboard-item-meta">{{ advice }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+{% else %}
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-title">直近の面接</h3>
+      <div class="actions" style="margin: 0;">
+        <a href="{% url 'interview_list' %}" class="button button-secondary">一覧へ</a>
+        <a href="{% url 'interview_create' %}" class="button">＋追加</a>
+      </div>
+    </div>
+
+    <ul class="dashboard-list">
+      {% for i in upcoming %}
+        <li>
+          <div class="dashboard-item-title">
+            {{ i.company.name }}（{{ i.get_stage_display }}）
+          </div>
+          <div class="dashboard-item-meta">
+            {{ i.scheduled_at|date:"Y-m-d H:i" }}
+            <a href="{% url 'interview_detail' i.pk %}">詳細</a>
+          </div>
+        </li>
+      {% empty %}
+        <li>直近の面接はありません</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-title">最近の振り返り</h3>
+    </div>
+
+    <ul class="dashboard-list">
+      {% for r in recent_reflections %}
+        <li>
+          <div class="dashboard-item-title">
+            {{ r.interview.company.name }}
+          </div>
+          <div class="dashboard-item-meta">
+            {{ r.created_at|date:"Y-m-d H:i" }} / {{ r.question|truncatechars:40 }}
+            <a href="{% url 'interview_detail' r.interview.pk %}">面接へ</a>
+          </div>
+        </li>
+      {% empty %}
+        <li>振り返りはまだありません</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card ai-card">
+    <div class="section-header">
+      <h3 class="section-title">AIサポート</h3>
+    </div>
+
+    <ul class="dashboard-list">
+      {% for advice in job_ai_advice %}
+        <li>
+          <div class="dashboard-item-title">次にやること提案</div>
+          <div class="dashboard-item-meta">{{ advice }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
 {% endblock %}

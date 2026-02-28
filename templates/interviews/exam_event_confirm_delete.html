@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}受験イベント削除 | 就活管理アプリ{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2 class="page-title">受験イベント削除</h2>
+
+  <p>「<strong>{{ exam_event.title }}</strong>」を削除しますか？</p>
+  <p class="muted">この操作は取り消せません。</p>
+
+  <form method="post" class="app-form">
+    {% csrf_token %}
+
+    <div class="actions">
+      <button type="submit">削除する</button>
+      <a href="{% url 'exam_event_detail' exam_event.id %}" class="button button-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -7,11 +7,11 @@
   <div class="form-header">
     <div class="form-header-left">
       <h2 class="page-title">{{ title }}</h2>
-      <p class="form-description">企業情報を入力して保存できます。</p>
+      <p class="form-description">学校情報を入力して保存できます。</p>
     </div>
 
     <div class="actions" style="margin: 0;">
-      <a href="{% url 'company_list' %}" class="button button-secondary">一覧へ</a>
+      <a href="{% url 'school_list' %}" class="button button-secondary">一覧へ</a>
     </div>
   </div>
 
@@ -23,7 +23,7 @@
 
     <div class="form-actions">
       <button type="submit">{{ submit_label }}</button>
-      <a href="{% url 'company_list' %}" class="button button-secondary">キャンセル</a>
+      <a href="{% url 'school_list' %}" class="button button-secondary">キャンセル</a>
     </div>
   </form>
 </div>

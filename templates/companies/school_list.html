@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}学校一覧 | 就活・受験管理アプリ{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2 class="page-title">学校一覧</h2>
+      <p class="page-description">志望校や受験予定の学校をまとめて管理できます。</p>
+    </div>
+
+    <div class="actions" style="margin: 0;">
+      <a href="{% url 'school_create' %}" class="button">＋学校追加</a>
+    </div>
+  </div>
+
+  <div class="filter-box">
+    <h3 class="table-title">絞り込み</h3>
+
+    <form method="get" class="filter-form">
+      <div class="form-group">
+        <label for="keyword">学校名検索</label>
+        <input
+          type="text"
+          name="keyword"
+          id="keyword"
+          value="{{ keyword }}"
+          placeholder="学校名を入力"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="category">受験区分</label>
+        <select name="category" id="category">
+          <option value="">すべて</option>
+          {% for value, label in category_choices %}
+            <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="status">ステータス</label>
+        <select name="status" id="status">
+          <option value="">すべて</option>
+          {% for value, label in status_choices %}
+            <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="actions" style="margin: 0;">
+        <button type="submit">検索</button>
+        {% if keyword or selected_category or selected_status %}
+          <a href="{% url 'school_list' %}" class="button button-secondary">リセット</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <p class="muted">表示件数：{{ filtered_count }}件 / 全{{ total_count }}件</p>
+
+  {% if schools %}
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>学校名</th>
+            <th>区分</th>
+            <th>種別</th>
+            <th>ステータス</th>
+            <th>受験日</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in schools %}
+            <tr>
+              <td>{{ s.name }}</td>
+              <td>{{ s.get_category_display }}</td>
+              <td>{{ s.get_school_type_display|default:"未設定" }}</td>
+              <td><span class="badge">{{ s.get_status_display }}</span></td>
+              <td>{{ s.exam_date|date:"Y-m-d"|default:"未設定" }}</td>
+              <td>
+                <div class="inline-actions">
+                  <a href="{% url 'school_detail' s.id %}" class="link-button">詳細</a>
+                  <a href="{% url 'school_update' s.id %}" class="link-button">編集</a>
+                  <a href="{% url 'school_delete' s.id %}" class="link-button">削除</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3 class="empty-state-title">学校がまだ登録されていません</h3>
+      <p class="empty-state-text">
+        志望校や受験予定の学校を追加すると、受験イベントや勉強記録も管理しやすくなります。
+      </p>
+      <a href="{% url 'school_create' %}" class="button">＋学校を追加する</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

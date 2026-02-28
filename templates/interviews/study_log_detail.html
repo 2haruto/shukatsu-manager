@@ -7,15 +7,15 @@
   <div class="form-header">
     <div class="form-header-left">
       <h2 class="page-title">{{ title }}</h2>
-      <p class="form-description">企業情報を入力して保存できます。</p>
+      <p class="form-description">日々の学習内容や勉強時間を記録できます。</p>
     </div>
 
     <div class="actions" style="margin: 0;">
-      <a href="{% url 'company_list' %}" class="button button-secondary">一覧へ</a>
+      <a href="{% url 'study_log_list' %}" class="button button-secondary">一覧へ</a>
     </div>
   </div>
 
-  <p class="required-note">必要な情報を入力して保存してください。</p>
+  <p class="required-note">学習内容を入力して保存してください。</p>
 
   <form method="post" class="app-form">
     {% csrf_token %}
@@ -23,7 +23,7 @@
 
     <div class="form-actions">
       <button type="submit">{{ submit_label }}</button>
-      <a href="{% url 'company_list' %}" class="button button-secondary">キャンセル</a>
+      <a href="{% url 'study_log_list' %}" class="button button-secondary">キャンセル</a>
     </div>
   </form>
 </div>

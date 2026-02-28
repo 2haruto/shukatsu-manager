@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}トップ | 就活・受験管理アプリ{% endblock %}
+
+{% block content %}
+<div class="card hero-card">
+  <h2 class="page-title">就活・受験管理アプリへようこそ</h2>
+  <p class="hero-text">
+    就活生向けの企業・面接管理と、学生向けの学校・受験イベント・勉強記録を
+    1つのアプリで切り替えて使えます。
+  </p>
+</div>
+
+<div class="mode-card-grid">
+  <div class="mode-select-card">
+    <div class="mode-select-badge">学生向け</div>
+    <h3 class="section-title">学生用はこちら</h3>
+    <p class="page-description">
+      志望校の管理、受験イベント、勉強記録をまとめて確認できます。
+    </p>
+
+    <ul class="feature-list">
+      <li>学校一覧の管理</li>
+      <li>模試・入試・出願締切の管理</li>
+      <li>勉強記録と学習の振り返り</li>
+      <li>AIサポートによる次の行動提案</li>
+    </ul>
+
+    <a href="{% url 'switch_mode' 'student' %}" class="button">学生モードではじめる</a>
+  </div>
+
+  <div class="mode-select-card">
+    <div class="mode-select-badge">就活生向け</div>
+    <h3 class="section-title">就活生用はこちら</h3>
+    <p class="page-description">
+      企業管理、面接予定、振り返りを整理して選考対策を進められます。
+    </p>
+
+    <ul class="feature-list">
+      <li>企業一覧の管理</li>
+      <li>面接予定の管理</li>
+      <li>振り返り記録の蓄積</li>
+      <li>AIサポートによる次の準備提案</li>
+    </ul>
+
+    <a href="{% url 'switch_mode' 'job' %}" class="button button-secondary">就活モードではじめる</a>
+  </div>
+</div>
+{% endblock %}

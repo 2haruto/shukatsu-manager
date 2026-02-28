@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}勉強記録削除 | 就活管理アプリ{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2 class="page-title">勉強記録削除</h2>
+
+  <p>「<strong>{{ study_log.title }}</strong>」を削除しますか？</p>
+  <p class="muted">この操作は取り消せません。</p>
+
+  <form method="post" class="app-form">
+    {% csrf_token %}
+
+    <div class="actions">
+      <button type="submit">削除する</button>
+      <a href="{% url 'study_log_detail' study_log.id %}" class="button button-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

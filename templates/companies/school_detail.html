@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}{{ school.name }} | 就活管理アプリ{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="detail-header">
+    <div class="detail-header-left">
+      <h2 class="page-title">{{ school.name }}</h2>
+      <p class="detail-subtitle">学校の基本情報、受験イベント、勉強記録をまとめて確認できます。</p>
+    </div>
+
+    <div class="actions" style="margin: 0;">
+      <a href="{% url 'school_list' %}" class="button button-secondary">一覧へ</a>
+      <a href="{% url 'school_update' school.id %}" class="button">学校編集</a>
+      <a href="{% url 'school_delete' school.id %}" class="button button-secondary">削除</a>
+    </div>
+  </div>
+
+  <div class="detail-card">
+    <div class="detail-list">
+      <div class="detail-label">受験区分</div>
+      <div class="detail-value">{{ school.get_category_display }}</div>
+
+      <div class="detail-label">学校種別</div>
+      <div class="detail-value">{{ school.get_school_type_display|default:"未設定" }}</div>
+
+      <div class="detail-label">ステータス</div>
+      <div class="detail-value"><span class="badge">{{ school.get_status_display }}</span></div>
+
+      <div class="detail-label">偏差値</div>
+      <div class="detail-value">{{ school.deviation_value|default:"未設定" }}</div>
+
+      <div class="detail-label">受験日</div>
+      <div class="detail-value">{{ school.exam_date|date:"Y-m-d"|default:"未設定" }}</div>
+
+      {% if school.url %}
+        <div class="detail-label">URL</div>
+        <div class="detail-value">
+          <a href="{{ school.url }}" target="_blank" rel="noopener noreferrer">{{ school.url }}</a>
+        </div>
+      {% endif %}
+
+      {% if school.memo %}
+        <div class="detail-label">メモ</div>
+        <div class="detail-value">{{ school.memo|linebreaksbr }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card detail-section">
+  <div class="section-header">
+    <h3 class="section-title">受験イベント一覧</h3>
+    <div class="actions" style="margin: 0;">
+      <a href="{% url 'exam_event_create' %}?school={{ school.id }}" class="button">＋受験イベント追加</a>
+    </div>
+  </div>
+
+  {% if school.exam_events.all %}
+    <ul class="simple-list">
+      {% for e in school.exam_events.all %}
+        <li>
+          <div class="simple-list-title">
+            {{ e.title }}（{{ e.get_event_type_display }}）
+          </div>
+          <div class="simple-list-meta">
+            {{ e.scheduled_at|date:"Y-m-d H:i" }}
+            {% if e.location %} / {{ e.location }}{% endif %}
+            / <a href="{% url 'exam_event_detail' e.id %}">詳細を見る</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="empty-state">
+      <h3 class="empty-state-title">受験イベントがまだありません</h3>
+      <p class="empty-state-text">この学校に模試や入試などの予定を追加していきましょう。</p>
+      <a href="{% url 'exam_event_create' %}?school={{ school.id }}" class="button">＋受験イベント追加</a>
+    </div>
+  {% endif %}
+</div>
+
+<div class="card detail-section">
+  <div class="section-header">
+    <h3 class="section-title">勉強記録</h3>
+    <div class="actions" style="margin: 0;">
+      <a href="{% url 'study_log_create' %}?school={{ school.id }}" class="button">＋勉強記録追加</a>
+    </div>
+  </div>
+
+  {% if school.study_logs.all %}
+    <ul class="simple-list">
+      {% for log in school.study_logs.all %}
+        <li>
+          <div class="simple-list-title">
+            {{ log.get_subject_display }} / {{ log.title }}
+          </div>
+          <div class="simple-list-meta">
+            {{ log.study_date|date:"Y-m-d" }} / {{ log.duration_minutes }}分
+            / <a href="{% url 'study_log_detail' log.id %}">詳細を見る</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="empty-state">
+      <h3 class="empty-state-title">勉強記録がまだありません</h3>
+      <p class="empty-state-text">この学校に向けた学習内容を記録すると、振り返りしやすくなります。</p>
+      <a href="{% url 'study_log_create' %}?school={{ school.id }}" class="button">＋勉強記録追加</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

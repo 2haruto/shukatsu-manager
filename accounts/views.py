@@ -1,11 +1,18 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.utils import timezone
 
 from companies.models import Company
 from interviews.models import Interview, ReflectionItem
+
+
+class AppLoginView(LoginView):
+    template_name = "registration/login.html"
+    redirect_authenticated_user = True
+
 
 def signup(request):
     if request.method == "POST":

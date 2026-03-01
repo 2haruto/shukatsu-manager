@@ -102,18 +102,21 @@
                 <span class="muted">{{ c.role|default:"職種未設定" }}</span>
               </td>
 
-              <td><span class="badge">{{ c.get_status_display }}</span></td>
+              <td>
+                <span class="badge">{{ c.get_status_display }}</span>
+              </td>
 
               <td>{{ c.priority }}</td>
 
               <td>
                 {% if c.entry_deadline %}
                   {{ c.entry_deadline|date:"Y-m-d" }}<br>
+
                   {% if not c.es_submitted %}
                     {% if c.entry_deadline < today %}
-                      <span class="muted">締切超過</span>
+                      <span class="status-chip status-chip-danger">締切超過</span>
                     {% elif c.entry_deadline <= soon_date %}
-                      <span class="muted">締切近い</span>
+                      <span class="status-chip status-chip-warning">締切近い</span>
                     {% endif %}
                   {% endif %}
                 {% else %}
@@ -125,7 +128,8 @@
                 {% if c.es_submitted %}
                   <span class="badge">提出済み</span>
                   {% if c.es_submitted_at %}
-                    <br><span class="muted">{{ c.es_submitted_at|date:"Y-m-d" }}</span>
+                    <br>
+                    <span class="muted">{{ c.es_submitted_at|date:"Y-m-d" }}</span>
                   {% endif %}
                 {% else %}
                   <span class="badge">未提出</span>

@@ -10,7 +10,7 @@
     <a href="{% url 'company_list' %}" class="button button-secondary">一覧へ</a>
     <a href="{% url 'company_update' company.id %}" class="button">企業編集</a>
     <a href="{% url 'company_delete' company.id %}" class="button button-secondary">削除</a>
-    <a href="{% url 'interview_create' %}" class="button">面接追加</a>
+    <a href="{% url 'interview_create' %}?company={{ company.id }}" class="button">面接追加</a>
   </div>
 
   <div class="detail-list">
@@ -79,6 +79,57 @@
             コピー
           </button>
           <div class="copy-text">{{ company.motivation|linebreaksbr }}</div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if company.entry_deadline %}
+      <div class="detail-label">ES提出締切</div>
+      <div class="detail-value">{{ company.entry_deadline|date:"Y-m-d" }}</div>
+    {% endif %}
+
+    <div class="detail-label">ES提出状況</div>
+    <div class="detail-value">
+      {% if company.es_submitted %}
+        <span class="badge">提出済み</span>
+      {% else %}
+        <span class="badge">未提出</span>
+      {% endif %}
+    </div>
+
+    {% if company.es_submitted_at %}
+      <div class="detail-label">ES提出日</div>
+      <div class="detail-value">{{ company.es_submitted_at|date:"Y-m-d" }}</div>
+    {% endif %}
+
+    {% if company.es_version_note %}
+      <div class="detail-label">提出バージョンメモ</div>
+      <div class="detail-value">
+        <div class="copy-block">
+          <button
+            type="button"
+            class="button button-secondary copy-button"
+            data-copy-text="{{ company.es_version_note|escapejs }}"
+          >
+            コピー
+          </button>
+          <div class="copy-text">{{ company.es_version_note|linebreaksbr }}</div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if company.questions_asked %}
+      <div class="detail-label">面接で聞かれたこと</div>
+      <div class="detail-value">
+        <div class="copy-block">
+          <button
+            type="button"
+            class="button button-secondary copy-button"
+            data-copy-text="{{ company.questions_asked|escapejs }}"
+          >
+            コピー
+          </button>
+          <div class="copy-text">{{ company.questions_asked|linebreaksbr }}</div>
         </div>
       </div>
     {% endif %}

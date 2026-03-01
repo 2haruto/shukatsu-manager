@@ -8,6 +8,7 @@ from django.utils import timezone
 from .models import Company, School
 from .forms import CompanyForm, SchoolForm
 from interviews.models import Interview, ReflectionItem, ExamEvent, StudyLog
+from django.db.models import Min, Q
 
 
 
@@ -50,8 +51,18 @@ def build_student_ai_advice(today, weekly_minutes, upcoming_exam_events, recent_
     return advice[:3]
 
 
-def build_job_ai_advice(upcoming, recent_reflections):
+def build_job_ai_advice(upcoming, recent_reflections, deadline_soon_companies, deadline_overdue_count):
     advice = []
+
+    if deadline_overdue_count > 0:
+        advice.append("ES締切を過ぎて未提出の企業があります。優先度の高い企業から状況確認と次の対応を整理しましょう。")
+    elif deadline_soon_companies.exists():
+        first_deadline = deadline_soon_companies.first()
+        advice.append(
+            f"締切が近い企業があります。まずは「{first_deadline.name}」のES提出準備を優先すると安心です。"
+        )
+    else:
+        advice.append("直近のES締切は落ち着いています。今のうちに企業研究や面接準備を進めましょう。")
 
     next_interview = upcoming.first()
     if next_interview:
@@ -60,7 +71,7 @@ def build_job_ai_advice(upcoming, recent_reflections):
             "志望動機・自己紹介・逆質問を先に整理しておくと安心です。"
         )
     else:
-        advice.append("直近の面接予定はありません。今のうちに企業研究やESの見直しを進めましょう。")
+        advice.append("直近の面接予定はありません。自己PRや志望動機のブラッシュアップを進めるチャンスです。")
 
     latest_reflection = recent_reflections.first()
     if latest_reflection:
@@ -70,8 +81,6 @@ def build_job_ai_advice(upcoming, recent_reflections):
         )
     else:
         advice.append("振り返り記録がまだ少ないので、面接ごとに質問・回答・改善点を残していきましょう。")
-
-    advice.append("次回に向けて、結論ファーストで話す練習を1回だけでもやっておくと安定しやすいです。")
 
     return advice[:3]
 
@@ -92,13 +101,52 @@ def dashboard(request):
         .order_by("-created_at")[:5]
     )
 
-    job_ai_advice = build_job_ai_advice(upcoming, recent_reflections)
+    today = timezone.localdate()
+    soon_date = today + timedelta(days=7)
+
+    base_companies = Company.objects.filter(owner=request.user)
+
+    company_count = base_companies.count()
+    es_submitted_count = base_companies.filter(es_submitted=True).count()
+    es_pending_count = base_companies.filter(es_submitted=False).count()
+
+    deadline_soon_companies = base_companies.filter(
+        entry_deadline__isnull=False,
+        entry_deadline__gte=today,
+        entry_deadline__lte=soon_date,
+        es_submitted=False,
+    ).order_by("entry_deadline", "-priority")[:5]
+
+    deadline_overdue_companies = base_companies.filter(
+        entry_deadline__isnull=False,
+        entry_deadline__lt=today,
+        es_submitted=False,
+    ).order_by("entry_deadline", "-priority")[:5]
+
+    recent_companies = base_companies.order_by("-updated_at")[:5]
+
+    job_ai_advice = build_job_ai_advice(
+        upcoming,
+        recent_reflections,
+        deadline_soon_companies,
+        deadline_overdue_companies.count(),
+    )
 
     context = {
         "mode": mode,
         "upcoming": upcoming,
         "recent_reflections": recent_reflections,
         "job_ai_advice": job_ai_advice,
+        "company_count": company_count,
+        "es_submitted_count": es_submitted_count,
+        "es_pending_count": es_pending_count,
+        "deadline_soon_companies": deadline_soon_companies,
+        "deadline_overdue_companies": deadline_overdue_companies,
+        "deadline_soon_count": deadline_soon_companies.count(),
+        "deadline_overdue_count": deadline_overdue_companies.count(),
+        "recent_companies": recent_companies,
+        "today": today,
+        "soon_date": soon_date,
     }
 
     if mode == "student":
@@ -166,7 +214,18 @@ def company_list(request):
     keyword = request.GET.get("keyword", "").strip()
     sort = request.GET.get("sort", "updated_desc")
 
-    companies = Company.objects.filter(owner=request.user)
+    today = timezone.localdate()
+    soon_date = today + timedelta(days=7)
+
+    companies = (
+        Company.objects.filter(owner=request.user)
+        .annotate(
+            next_interview_at=Min(
+                "interviews__scheduled_at",
+                filter=Q(interviews__scheduled_at__gte=timezone.now()),
+            )
+        )
+    )
     total_count = companies.count()
 
     if status:
@@ -181,16 +240,36 @@ def company_list(request):
         companies = companies.order_by("priority", "-updated_at")
     elif sort == "name_asc":
         companies = companies.order_by("name")
+    elif sort == "deadline_asc":
+        companies = companies.order_by("entry_deadline", "-priority", "-updated_at")
+    elif sort == "interview_asc":
+        companies = companies.order_by("next_interview_at", "-priority", "-updated_at")
     else:
         companies = companies.order_by("-updated_at")
 
     filtered_count = companies.count()
+
+    base_companies = Company.objects.filter(owner=request.user)
+    deadline_overdue_count = base_companies.filter(
+        entry_deadline__isnull=False,
+        entry_deadline__lt=today,
+        es_submitted=False,
+    ).count()
+    deadline_soon_count = base_companies.filter(
+        entry_deadline__isnull=False,
+        entry_deadline__gte=today,
+        entry_deadline__lte=soon_date,
+        es_submitted=False,
+    ).count()
+    es_submitted_count = base_companies.filter(es_submitted=True).count()
 
     status_choices = Company._meta.get_field("status").choices
     sort_choices = [
         ("updated_desc", "更新日が新しい順"),
         ("priority_desc", "優先度が高い順"),
         ("priority_asc", "優先度が低い順"),
+        ("deadline_asc", "ES締切が早い順"),
+        ("interview_asc", "次の面接が早い順"),
         ("name_asc", "企業名順"),
     ]
 
@@ -206,6 +285,11 @@ def company_list(request):
             "sort_choices": sort_choices,
             "total_count": total_count,
             "filtered_count": filtered_count,
+            "today": today,
+            "soon_date": soon_date,
+            "deadline_overdue_count": deadline_overdue_count,
+            "deadline_soon_count": deadline_soon_count,
+            "es_submitted_count": es_submitted_count,
         },
     )
 

@@ -112,6 +112,88 @@
 {% else %}
   <div class="card">
     <div class="section-header">
+      <h3 class="section-title">就活版サマリー</h3>
+      <div class="actions" style="margin: 0;">
+        <a href="{% url 'company_list' %}" class="button button-secondary">企業一覧へ</a>
+        <a href="{% url 'company_create' %}" class="button">＋企業追加</a>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label">登録企業</div>
+        <div class="summary-value">{{ company_count }}件</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-label">ES未提出</div>
+        <div class="summary-value">{{ es_pending_count }}件</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-label">締切7日以内</div>
+        <div class="summary-value">{{ deadline_soon_count }}件</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-label">締切超過</div>
+        <div class="summary-value">{{ deadline_overdue_count }}件</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-title">締切が近い企業</h3>
+      <div class="actions" style="margin: 0;">
+        <a href="{% url 'company_list' %}?sort=deadline_asc" class="button button-secondary">一覧で見る</a>
+      </div>
+    </div>
+
+    <ul class="dashboard-list">
+      {% for c in deadline_soon_companies %}
+        <li>
+          <div class="dashboard-item-title">
+            {{ c.name }}
+          </div>
+          <div class="dashboard-item-meta">
+            締切：{{ c.entry_deadline|date:"Y-m-d" }} / 優先度：{{ c.priority }}
+            <a href="{% url 'company_detail' c.pk %}">詳細</a>
+          </div>
+        </li>
+      {% empty %}
+        <li>7日以内のES締切はありません</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-title">締切超過の企業</h3>
+      <div class="actions" style="margin: 0;">
+        <a href="{% url 'company_list' %}?sort=deadline_asc" class="button button-secondary">一覧で見る</a>
+      </div>
+    </div>
+
+    <ul class="dashboard-list">
+      {% for c in deadline_overdue_companies %}
+        <li>
+          <div class="dashboard-item-title">
+            {{ c.name }}
+          </div>
+          <div class="dashboard-item-meta">
+            締切：{{ c.entry_deadline|date:"Y-m-d" }} / まだ未提出
+            <a href="{% url 'company_detail' c.pk %}">詳細</a>
+          </div>
+        </li>
+      {% empty %}
+        <li>締切超過の未提出企業はありません</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="section-header">
       <h3 class="section-title">直近の面接</h3>
       <div class="actions" style="margin: 0;">
         <a href="{% url 'interview_list' %}" class="button button-secondary">一覧へ</a>
@@ -132,6 +214,31 @@
         </li>
       {% empty %}
         <li>直近の面接はありません</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-title">最近更新した企業</h3>
+      <div class="actions" style="margin: 0;">
+        <a href="{% url 'company_list' %}" class="button button-secondary">一覧へ</a>
+      </div>
+    </div>
+
+    <ul class="dashboard-list">
+      {% for c in recent_companies %}
+        <li>
+          <div class="dashboard-item-title">
+            {{ c.name }}
+          </div>
+          <div class="dashboard-item-meta">
+            更新日：{{ c.updated_at|date:"Y-m-d H:i" }} / {{ c.get_status_display }}
+            <a href="{% url 'company_detail' c.pk %}">詳細</a>
+          </div>
+        </li>
+      {% empty %}
+        <li>最近更新した企業はありません</li>
       {% endfor %}
     </ul>
   </div>

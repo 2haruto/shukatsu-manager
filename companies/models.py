@@ -23,6 +23,12 @@ class Company(models.Model):
     resume_memo = models.TextField("コピペ用メモ", blank=True)
     self_pr = models.TextField("自己PR", blank=True)
     motivation = models.TextField("志望動機", blank=True)
+    
+    entry_deadline = models.DateField("ES提出締切", blank=True, null=True)
+    es_submitted = models.BooleanField("ES提出済み", default=False)
+    es_submitted_at = models.DateField("ES提出日", blank=True, null=True)
+    es_version_note = models.TextField("提出バージョンメモ", blank=True)
+    questions_asked = models.TextField("面接で聞かれたこと", blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

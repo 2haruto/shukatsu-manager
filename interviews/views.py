@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 
-from companies.models import School
+from companies.models import School, Company
 from .forms import ReflectionItemForm, InterviewForm, ExamEventForm, StudyLogForm
 from .models import Interview, ExamEvent, StudyLog
 
@@ -44,15 +44,27 @@ def interview_detail(request, pk: int):
 
 @login_required
 def interview_create(request):
+    initial = {}
+    company_id = request.GET.get("company")
+
+    if company_id:
+        company = Company.objects.filter(pk=company_id, owner=request.user).first()
+        if company:
+            initial["company"] = company
+
     if request.method == "POST":
         form = InterviewForm(request.POST, user=request.user)
         if form.is_valid():
             interview = form.save()
             return redirect("interview_detail", pk=interview.pk)
     else:
-        form = InterviewForm(user=request.user)
+        form = InterviewForm(user=request.user, initial=initial)
 
-    return render(request, "interviews/interview_form.html", {"form": form})
+    return render(
+        request,
+        "interviews/interview_form.html",
+        {"form": form},
+    )
 
 
 @login_required

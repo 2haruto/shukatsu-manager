@@ -19,8 +19,16 @@ class Company(models.Model):
     priority = models.PositiveSmallIntegerField(default=3)
     url = models.URLField(blank=True)
     memo = models.TextField(blank=True)
+    
+    resume_memo = models.TextField("コピペ用メモ", blank=True)
+    self_pr = models.TextField("自己PR", blank=True)
+    motivation = models.TextField("志望動機", blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    
+    
 
     def __str__(self) -> str:
         return self.name

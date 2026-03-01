@@ -34,6 +34,54 @@
       <div class="detail-label">メモ</div>
       <div class="detail-value">{{ company.memo|linebreaksbr }}</div>
     {% endif %}
+
+    {% if company.resume_memo %}
+      <div class="detail-label">コピペ用メモ</div>
+      <div class="detail-value">
+        <div class="copy-block">
+          <button
+            type="button"
+            class="button button-secondary copy-button"
+            data-copy-text="{{ company.resume_memo|escapejs }}"
+          >
+            コピー
+          </button>
+          <div class="copy-text">{{ company.resume_memo|linebreaksbr }}</div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if company.self_pr %}
+      <div class="detail-label">自己PR</div>
+      <div class="detail-value">
+        <div class="copy-block">
+          <button
+            type="button"
+            class="button button-secondary copy-button"
+            data-copy-text="{{ company.self_pr|escapejs }}"
+          >
+            コピー
+          </button>
+          <div class="copy-text">{{ company.self_pr|linebreaksbr }}</div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if company.motivation %}
+      <div class="detail-label">志望動機</div>
+      <div class="detail-value">
+        <div class="copy-block">
+          <button
+            type="button"
+            class="button button-secondary copy-button"
+            data-copy-text="{{ company.motivation|escapejs }}"
+          >
+            コピー
+          </button>
+          <div class="copy-text">{{ company.motivation|linebreaksbr }}</div>
+        </div>
+      </div>
+    {% endif %}
   </div>
 </div>
 
@@ -53,4 +101,26 @@
     <p class="empty-message">面接はまだありません。</p>
   {% endif %}
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const buttons = document.querySelectorAll(".copy-button");
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", async () => {
+        const text = button.dataset.copyText || "";
+        try {
+          await navigator.clipboard.writeText(text);
+          const original = button.textContent;
+          button.textContent = "コピー済み";
+          setTimeout(() => {
+            button.textContent = original;
+          }, 1200);
+        } catch (error) {
+          alert("コピーに失敗しました。手動でコピーしてください。");
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}

@@ -827,3 +827,13 @@ tr:hover {
   grid-template-columns: 1fr;
 }
 }
+
+.copy-block {
+  display: grid;
+  gap: 10px;
+}
+
+.copy-text {
+  white-space: normal;
+  line-height: 1.7;
+}
